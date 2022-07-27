@@ -1,0 +1,10 @@
+name: Manually trigger an AML job
+
+on: workflow_dispatch
+
+jobs:
+ train-model:
+  runs-on: ubuntu-latest
+  steps:
+  - name: Trigger AML job
+  run: | az ml job create --file src/job.yml --resource-group kapildhanger-rg --workspace-name kdmlworkspace
