@@ -1,0 +1,60 @@
+name: Deploy-list to Development and Production
+
+on:
+#  pull_request:
+#    branches:
+#    - main
+  workflow_dispatch:
+    inputs:
+      resource_group:
+        description: 'Resource group name'
+        required: true
+        default: 'kapildhanger-rg' 
+        type: string
+      aml_workspace:
+        description: 'Azure Machine Learning workspace name'
+        required: true
+        default: 'kdmlworkspace' 
+        type: string
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    environment: Development
+    steps:
+    - name: Check out repo
+      uses: actions/checkout@main
+    - name: Install az ml extension
+      run: az extension add -n ml -y
+    - name: Azure login
+      uses: azure/login@v1
+      with:
+        creds: ${{secrets.AZURE_CREDENTIALS}}
+    - name: Submit Training Job
+      run: |
+        cd src
+        az ml job create --file job.yml --resource-group "kapildhanger-rg" --workspace-name "kdmlworkspace"
+  deployment:
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+    - name: Check out repo
+      uses: actions/checkout@main
+    - name: Install az ml extension
+      run: az extension add -n ml -y
+    - name: Azure login
+      uses: azure/login@v1
+      with:
+        creds: ${{secrets.AZURE_CREDENTIALS}}
+    - name: Set Defaults for Azure Sub
+      run: |
+        az account set --subscription c46a9435-c957-4e6c-a0f4-b9a597984773
+        az configure --defaults workspace=kdmlworkspace group=kapildhanger-rg
+    - name: Register Model
+      run: |
+        cd src
+        az ml model create -n diabetes-data-example -p runs:/lucid_oyster_9qdtd7cp6m/model --type mlflow_model --resource-group kapildhanger-rg --workspace-name kdmlworkspace
+    - name: Submit Training Job
+      run: |
+        cd src
+        az ml model list --resource-group "kapildhanger-rg" --workspace-name "kdmlworkspace"
