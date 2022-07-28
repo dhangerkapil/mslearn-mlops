@@ -12,10 +12,22 @@ jobs:
     - name: Use Python version 3.7
       uses: actions/setup-python@v3
       with:
-        python-version: '3.8'
+        python-version: '3.7'
     - name: Install Flake8
       run: |
         python -m pip install flake8
     - name: Run linting tests
       run: | 
         flake8 src/model/
+    - name: Install pip pytest
+      run: | 
+        pip install pytest
+    - name: Install pip mlflow
+      run: | 
+        pip install mlflow
+    - name: Install pip sklearn
+      run: | 
+        pip install -U scikit-learn
+    - name: Run tests
+      run: | 
+        pytest tests/test_train.py
