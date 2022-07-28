@@ -48,7 +48,7 @@ jobs:
         creds: ${{secrets.AZURE_CREDENTIALS}}
     - name: Set Defaults for Azure Sub
       run: |
-        az account set --subscription c46a9435-c957-4e6c-a0f4-b9a597984773
+        az account set --subscription e494c045-d520-4582-9e34-9de09808efd1
         az configure --defaults workspace=kdmlworkspace group=kapildhanger-rg
     - name: Register Model
       run: |
